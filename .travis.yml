@@ -31,7 +31,8 @@ script:
   - make lab7_iterable_zipper_iterator_tests
   - make lab7_iterable_iterator_wrapper_tests
   - make lab7_iterable_enumeration_tests
-   - make lab7_iterable_product_tests
+  - make lab7_iterable_product_tests
+  - make lab12_timerecorder_tests
   - cd .. && echo 'RUNNING ALL COMPILED TESTS'
   - find build/tests/ -type f -name '*tests' -exec {} \;
   - echo 'RUNNING CPPCHECK STATIC ANALYSIS'

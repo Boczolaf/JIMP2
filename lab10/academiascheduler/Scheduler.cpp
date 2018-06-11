@@ -84,27 +84,52 @@ const academia::SchedulingItem &academia::Schedule::operator[](int id) const {
 academia::Schedule academia::GreedyScheduler::PrepareNewSchedule(const std::vector<int> &rooms,
                                              const std::map<int, std::vector<int>> &teacher_courses_assignment,
                                              const std::map<int, std::set<int>> &courses_of_year,
-                                             int n_time_slots) {
-    Schedule result = Schedule();
-    unsigned int counter = 0;
-
-    for(const auto &teacher : teacher_courses_assignment){
-        if(teacher.second.size() >= n_time_slots) throw NoViableSolutionFound();
-
-        for(const auto &teacher_course : teacher.second){
-            for(const auto &year : courses_of_year){
-                if(year.second.size() >= n_time_slots) throw NoViableSolutionFound();
-
-                for(const auto &year_course: year.second){
-                    if(teacher_course == year_course){
-                        auto tmp =  SchedulingItem{teacher_course, teacher.first, rooms[counter], counter, year.first};
-                        result.InsertScheduleItem(tmp);
-                        ++counter;
-                    }
-                }
-            }
+                                             int n_time_slots)
+{
+    academia::Schedule output;
+    for(const auto &teacher: teacher_courses_assignment)
+    {
+        for(auto course: teacher.second)
+        {
+            auto year = MatchYearToCourse(courses_of_year,course);
+            auto time_and_place = TimeAndPlace(output,teacher.first,rooms,n_time_slots,year);
+            output.InsertScheduleItem(SchedulingItem(course,teacher.first,time_and_place.first,time_and_place.second,year));
         }
     }
-    return result;
+    return output;
 }
+
+int academia::GreedyScheduler::MatchYearToCourse(const std::map<int, std::set<int>> &courses_on_year, int course)const {
+    for (const auto& courses: courses_on_year)
+    {
+        if(courses.second.find(course)!=courses.second.end())
+        {
+            return courses.first;
+        }
+    }
+    throw NoViableSolutionFound();
+}
+
+std::pair<int, int> academia::GreedyScheduler::TimeAndPlace(const academia::Schedule &schedule, int teacher,
+                                                  const std::vector<int> &rooms, int n_time_slots, int year) const
+{
+    auto teacher_free_slots = schedule.OfTeacher(teacher).AvailableTimeSlots(n_time_slots);
+    auto year_free_slots = schedule.OfYear(year).AvailableTimeSlots(n_time_slots);
+    std::vector<int> free_slots;
+    std::set_intersection(teacher_free_slots.begin(),teacher_free_slots.end(), year_free_slots.begin(),year_free_slots.end(), std::back_inserter(free_slots));
+    for (auto room: rooms)
+    {
+        auto room_free_slots = schedule.OfRoom(room).AvailableTimeSlots(n_time_slots);
+        std::vector<int> free_slots2;
+        std::set_intersection(free_slots.begin(),free_slots.end(),room_free_slots.begin(),room_free_slots.end(),std::back_inserter(free_slots2));
+        if(free_slots2.size()>0)
+        {
+            return std::make_pair(room, *free_slots2.begin());
+        }
+    }
+
+    throw NoViableSolutionFound();
+
+}
+
 

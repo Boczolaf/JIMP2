@@ -57,6 +57,8 @@ namespace academia{
                                     const std::map<int, std::vector<int>> &teacher_courses_assignment,
                                     const std::map<int, std::set<int>> &courses_of_year,
                                     int n_time_slots) override;
+        int MatchYearToCourse(const std::map<int,std::set<int>> &courses_on_year, int course)const;
+        std::pair<int, int> TimeAndPlace(const Schedule &schedule, int teacher, const std::vector<int> &rooms, int n_time_slots, int year)const;
     };
 }
 #endif //JIMP_EXERCISES_SCHEDULER_H
