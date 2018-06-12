@@ -2,37 +2,35 @@
 // Created by Noxianin on 2018-06-11.
 //
 
-#ifndef JIMP_EXERCISES_TREEITERATORS_H
-#define JIMP_EXERCISES_TREEITERATORS_H
+#ifndef JIMP_EXERCISES_POSTORDERTREEITERATORS_H
+#define JIMP_EXERCISES_POSTORDERTREEITERATORS_H
 #include "../tree/Tree.h"
-#include "PreOrderTreeIterators.h"
-#include "PostOrderTreeIterators.h"
 #include <vector>
+
 
 namespace tree {
 
 
-    //IN-ORDER
     template<typename T>
-    class InOrderTreeIterator {
+    class PostOrderTreeIterator {
     public:
-        explicit InOrderTreeIterator(std::shared_ptr<Tree<T>> root) {
+        explicit PostOrderTreeIterator(std::shared_ptr<Tree<T>> root) {
             PlaceInOrder(root);
             index = 0;
         }
 
         void PlaceInOrder(std::shared_ptr<Tree<T>> tree) {
             if (tree->left_) PlaceInOrder(tree->left_);
-            order_.push_back(tree);
             if (tree->right_) PlaceInOrder(tree->right_);
+            order_.push_back(tree);
         }
 
-        InOrderTreeIterator<T> End() {
+        PostOrderTreeIterator<T> End() {
             index = order_.size();
             return *this;
         }
 
-        InOrderTreeIterator<T> operator++() {
+        PostOrderTreeIterator<T> operator++() {
             index++;
             return *this;
         }
@@ -42,7 +40,7 @@ namespace tree {
 
         }
 
-        bool operator!=(const InOrderTreeIterator &other) const {
+        bool operator!=(const PostOrderTreeIterator &other) const {
             return other.index != index;
         }
 
@@ -52,16 +50,16 @@ namespace tree {
     };
 
     template<typename T>
-    class InOrderTreeView {
+    class PostOrderTreeView {
     public:
-        explicit InOrderTreeView(Tree<T> *tree) : root_{std::make_shared<Tree<T>>(*tree)} {};
+        explicit PostOrderTreeView(Tree<T> *tree) : root_{std::make_shared<Tree<T>>(*tree)} {};
 
-        InOrderTreeIterator<T> begin() {
-            return InOrderTreeIterator<T>(root_);
+        PostOrderTreeIterator<T> begin() {
+            return PostOrderTreeIterator<T>(root_);
         }
 
-        InOrderTreeIterator<T> end() {
-            return InOrderTreeIterator<T>(root_).End();
+        PostOrderTreeIterator<T> end() {
+            return PostOrderTreeIterator<T>(root_).End();
         }
 
     private:
@@ -69,10 +67,10 @@ namespace tree {
     };
 
     template<typename T>
-    InOrderTreeView<T> InOrder(Tree<T> *tree) {
-        return InOrderTreeView<T>(tree);
+    PostOrderTreeView<T> PostOrder(Tree<T> *tree) {
+        return PostOrderTreeView<T>(tree);
     }
 
 
 }
-#endif //JIMP_EXERCISES_TREEITERATORS_H
+#endif //JIMP_EXERCISES_POSTORDERTREEITERATORS_H
